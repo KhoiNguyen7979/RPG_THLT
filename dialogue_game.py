@@ -56,10 +56,10 @@ dialogue_automaton = {
         'is_final': False
     },
     'CHIEN_DAU': {
-        'mo_ta': 'Bạn lao vào cuộc chiến với những vệ binh tâm linh! Kiếm quang lấp lánh, tiếng gầm vang dội.',
+        'mo_ta': '--- TRẠNG THÁI: CHIẾN ĐẤU ---\n(Lúc này Ô-tô-mát đang đợi tín hiệu WIN/LOSE từ hệ thống Battle chính của game)',
         'options': {
-            '1': ("(Dốc toàn lực tấn công và chiến thắng)", 'CHO_PHEP_QUA'),
-            '2': ("(Sơ hở và bị đánh bại)", 'TRUC_XUAT'),
+            '1': ("Hệ thống gửi tín hiệu: NGƯỜI CHƠI THẮNG", 'CHO_PHEP_QUA'),
+            '2': ("Hệ thống gửi tín hiệu: NGƯỜI CHƠI THUA", 'TRUC_XUAT'),
         },
         'is_final': False
     },
@@ -104,35 +104,47 @@ def run_game():
         clear_screen()
         current_state_data = dialogue_automaton[current_state_key]
 
-        # In ra lời thoại của NPC
         print("\n" + "="*50)
         print("                 LINH HỒN CỔ ĐẠI                  ")
         print("="*50 + "\n")
         
-        # Thêm hiệu ứng gõ chữ cho lời nói
         type_text(current_state_data['mo_ta'], delay=0.02)
         print("\n" + "-"*50)
 
-        # Nếu là trạng thái kết thúc (Final State), dừng trò chơi
         if current_state_data['is_final']:
             break
 
-        # In ra các lựa chọn cho người chơi (Các transition)
+        # --- XỬ LÝ ĐẶC BIỆT CHO TRẠNG THÁI CHIẾN ĐẤU (KHÔNG DÙNG INPUT) ---
+        if current_state_key == 'CHIEN_DAU':
+            print("\n[HỆ THỐNG]: Đang trong chế độ chiến đấu... Vui lòng đợi kết quả...")
+            time.sleep(2)
+            
+            # Giả lập kết quả từ kỹ năng người chơi (Ví dụ: 70% thắng, 30% thua)
+            import random
+            outcome = '1' if random.random() < 0.7 else '2' 
+            
+            if outcome == '1':
+                print("\n[!] CHÚC MỪNG: Bạn đã tiêu diệt hết quái vật!")
+            else:
+                print("\n[!] THẤT BẠI: Bạn đã gục ngã trước sức mạnh của vệ binh!")
+            
+            time.sleep(2)
+            current_state_key = current_state_data['options'][outcome][1]
+            continue
+        # ---------------------------------------------------------------
+
         print("\nLựa chọn của bạn:")
         for key, (text, next_state) in current_state_data['options'].items():
             print(f"  [{key}] - {text}")
 
-        # Lấy lựa chọn từ người chơi (Ký hiệu đầu vào input symbol)
-        choice = input("\n> Quyết định của bạn (Nhập 1, 2, ...): ").strip()
+        choice = input("\n> Quyết định của bạn: ").strip()
 
-        # Hàm chuyển δ(q, a) = p
         if choice in current_state_data['options']:
-            # Lấy ra tên của trạng thái tiếp theo p
             next_state_key = current_state_data['options'][choice][1]
-            current_state_key = next_state_key # Cập nhật trạng thái hiện tại
+            current_state_key = next_state_key
         else:
-            print("\n[!] Lựa chọn không hợp lệ hoặc bạn im lặng quá lâu. Vui lòng nhập lại...")
-            time.sleep(2) # Dừng 2 giây để người chơi đọc lại
+            print("\n[!] Lựa chọn không hợp lệ...")
+            time.sleep(1)
 
 # --- BƯỚC 3: KHỞI ĐỘNG TRÒ CHƠI ---
 if __name__ == "__main__":
