@@ -50,9 +50,16 @@ dialogue_automaton = {
     'TUC_GIAN': {
         'mo_ta': 'Không gian rung chuyển. Giọng nói gầm lên: "SỰ NGÔNG CUỒNG CỦA NGƯƠI SẼ PHẢI TRẢ GIÁ!!!"',
         'options': {
-            # Từ trạng thái này, mọi lựa chọn đều dẫn đến kết cục xấu
             '1': ("(Cố gắng bỏ chạy)", 'TRUC_XUAT'),
-            '2': ("(Rút vũ khí)", 'TRUC_XUAT'),
+            '2': ("(Rút vũ khí chiến đấu)", 'CHIEN_DAU'), 
+        },
+        'is_final': False
+    },
+    'CHIEN_DAU': {
+        'mo_ta': 'Bạn lao vào cuộc chiến với những vệ binh tâm linh! Kiếm quang lấp lánh, tiếng gầm vang dội.',
+        'options': {
+            '1': ("(Dốc toàn lực tấn công và chiến thắng)", 'CHO_PHEP_QUA'),
+            '2': ("(Sơ hở và bị đánh bại)", 'TRUC_XUAT'),
         },
         'is_final': False
     },
