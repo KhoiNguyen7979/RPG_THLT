@@ -174,6 +174,12 @@ class Scene2:
                             self.current_dialogue_state = next_state
                             self.dialogue_char_index = 0 # Trả chữ chạy về 0
                             
+                            # --- PHẦN SỬA ĐỔI: Nhảy thẳng vào chiến đấu nếu là trạng thái CHIEN_DAU ---
+                            if next_state == 'CHIEN_DAU':
+                                self.trigger_hostile()
+                                return
+                            # ----------------------------------------------------------------------
+
                             # Kiểm tra xem có phải trạng thái cuối?
                             if dialogue_automaton[next_state]['is_final']:
                                 if next_state == 'CHO_PHEP_QUA':
