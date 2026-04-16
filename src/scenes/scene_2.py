@@ -337,7 +337,26 @@ class Scene2:
         self.enemies.draw(screen)
         screen.blit(self.boss.image, self.boss.rect)
         self.player.draw(screen)
-
+        for enemy in self.enemies:
+            if enemy.current_state != "DEAD":
+                # Thiết lập kích thước thanh máu nhỏ
+                width = 40
+                height = 5
+                # Tọa độ: nằm trên đầu (rect.top) và căn giữa theo chiều ngang của lính
+                x = enemy.rect.centerx - width // 2
+                y = enemy.rect.top - 10
+                
+                # Tính toán tỷ lệ máu (Giả định máu tối đa của lính là 100 hoặc theo thuộc tính của nó)
+                # Nếu bạn chưa định nghĩa max_health cho lính, có thể mặc định là 100
+                max_h = getattr(enemy, 'max_health', 100) 
+                ratio = enemy.health / max_h if max_h > 0 else 0
+                
+                # Vẽ nền thanh máu (màu đen/xám)
+                pygame.draw.rect(screen, (50, 50, 50), (x, y, width, height))
+                # Vẽ phần máu hiện tại (màu đỏ để phân biệt với xanh của Player)
+                pygame.draw.rect(screen, (255, 0, 0), (x, y, int(width * ratio), height))
+                # Vẽ viền trắng cho chuyên nghiệp
+                pygame.draw.rect(screen, (255, 255, 255), (x, y, width, height), 1)
         # 4. Vẽ Đạn và Chìa khóa
         self.bullets.draw(screen)
         self.enemy_bullets.draw(screen)

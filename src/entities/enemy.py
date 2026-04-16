@@ -32,7 +32,7 @@ class Arrow(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (255, 100, 100), (0, 0, 15, 4)) # Đạn đỏ thẫm
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 8
-        
+
         dx = target_x - x
         dy = target_y - y
         dist = math.hypot(dx, dy)
@@ -44,11 +44,24 @@ class Arrow(pygame.sprite.Sprite):
             self.dy = dy / dist
         self.pos_x = float(x)
         self.pos_y = float(y)
-        
+
         # Quay mũi tên
         angle = math.degrees(math.atan2(-self.dy, self.dx))
         self.image = pygame.transform.rotate(self.image, angle)
         self.rect = self.image.get_rect(center=(x, y))
+
+
+    def update(self):
+        # Cập nhật vị trí dựa trên vận tốc
+        self.pos_x += self.dx * self.speed
+        self.pos_y += self.dy * self.speed
+        self.rect.centerx = int(self.pos_x)
+        self.rect.centery = int(self.pos_y)
+        
+        # Xóa mũi tên nếu bay ra khỏi màn hình
+        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH or \
+        self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
+            self.kill()
             
     def update(self):
         self.pos_x += self.dx * self.speed

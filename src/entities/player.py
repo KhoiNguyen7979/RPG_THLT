@@ -6,22 +6,41 @@ from src.core.utils import load_spritesheet, load_individual_sprites
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, target_x, target_y):
         super().__init__()
-        self.image = pygame.Surface((10, 10), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, (255, 255, 0), (5, 5), 5) # Đạn vàng
-        self.rect = self.image.get_rect(center=(x, y))
-        self.speed = 10
         
+        # 1. Nạp hình ảnh arrow.png thay vì vẽ hình tròn
+        try:
+            # Bạn nên để ảnh trong thư mục assets đã thiết lập
+            original_image = pygame.image.load("assets/graphics/Map/Scene2/arrow.png").convert_alpha()
+            # Scale kích thước mũi tên của Player (có thể cho to hơn lính một chút)
+            self.image = pygame.transform.scale(original_image, (100, 15))
+        except Exception as e:
+            print(f"Lỗi nạp ảnh bullet: {e}")
+            self.image = pygame.Surface((10, 10), pygame.SRCALPHA)
+            pygame.draw.circle(self.image, (255, 255, 0), (5, 5), 5)
+
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = 10 # Tốc độ đạn của Player nhanh hơn lính
+        
+        # 2. Tính toán hướng bay (Giữ nguyên logic vector của bạn)
         dx = target_x - x
         dy = target_y - y
         dist = math.hypot(dx, dy)
         if dist == 0:
-            self.dx = 1
-            self.dy = 0
+            self.dx, self.dy = 1, 0
         else:
             self.dx = dx / dist
             self.dy = dy / dist
+            
         self.pos_x = float(x)
         self.pos_y = float(y)
+        
+        # 3. Xoay hình ảnh mũi tên theo hướng chuột
+        # Dùng math.atan2 để tính góc xoay chính xác
+        angle = math.degrees(math.atan2(-self.dy, self.dx))
+        self.image = pygame.transform.rotate(self.image, angle)
+        
+        # Cập nhật lại rect để tâm mũi tên không bị lệch khi xoay
+        self.rect = self.image.get_rect(center=(x, y))
             
     def update(self):
         self.pos_x += self.dx * self.speed
