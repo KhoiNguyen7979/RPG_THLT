@@ -1,4 +1,6 @@
 import pygame
+pygame.init()
+pygame.mixer.init() # Khởi tạo bộ trộn âm thanh
 import sys
 from src.core.settings import *
 from src.core.scene_manager import SceneManager

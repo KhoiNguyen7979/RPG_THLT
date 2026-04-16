@@ -1,8 +1,8 @@
 class EnemyFSM:
-    def __init__(self):
+    def __init__(self) -> None:
         self.state = "PATROL"
 
-    def compute_next_state(self, distance, health):
+    def compute_next_state(self, distance, health) -> None:
         if health <= 0:
             self.state = "DEAD"
             return
@@ -15,5 +15,5 @@ class EnemyFSM:
         elif self.state == "ATTACK":
             if distance > 70: self.state = "CHASE"
             
-    def get_current_state(self):
+    def get_current_state(self) -> str:
         return self.state

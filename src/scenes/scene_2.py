@@ -28,13 +28,21 @@ class Scene2:
         self.dialogue_active = False
         self.dialogue_finished = False
         self.current_dialogue_state = 'TRUNG_LAP'
-        
+        4
         self.has_key = False
         self.key_dropped = False
         self.key_rect = pygame.Rect(400, 250, 20, 20)
         
-        self.font = pygame.font.SysFont("tahoma", 20)
-        self.big_font = pygame.font.SysFont("tahoma", 24, bold=True)
+        # Load hình ảnh chìa khóa
+        self.key_img = pygame.image.load("assets/graphics/Map/Scene2/key.png").convert_alpha()
+        self.key_img = pygame.transform.scale(self.key_img, (20, 20))
+        
+        # Load hình nền hộp thoại
+        self.dialogue_bg = pygame.image.load("assets/graphics/Map/Scene2/dialogue.png").convert_alpha()
+        self.dialogue_bg = pygame.transform.scale(self.dialogue_bg, (700, 230))
+        
+        self.font = pygame.font.SysFont("tahoma", 15)
+        self.big_font = pygame.font.SysFont("tahoma", 20, bold=True)
         self.dialogue_char_index = 0
         
         self.minions_spawned = False
@@ -95,11 +103,13 @@ class Scene2:
         self.dialogue_active = False
         self.dialogue_finished = True
         self.boss.is_hostile = True
-        # Gọi 3 lính ra ngẫu nhiên quanh boss
+        
+        # Thay đổi range(3) thành range(6) để tạo ra 6 con lính
         if not self.minions_spawned:
-            for _ in range(3):
+            for _ in range(6):
                 x = random.randint(50, 750)
                 y = random.randint(100, 500)
+                # Ngẫu nhiên chọn giữa Archer (Cung thủ) và CloseRanger (Lính cận chiến)
                 if random.choice([True, False]):
                     self.enemies.add(Archer(x, y))
                 else:
@@ -140,7 +150,7 @@ class Scene2:
             
             # Khởi tạo Text Wrap
             if getattr(self, 'wrapped_text_current_state', None) != self.current_dialogue_state:
-                self.wrapped_text_cache = self._wrap_string(state_data['mo_ta'], self.big_font, 660)
+                self.wrapped_text_cache = self._wrap_string(state_data['mo_ta'], self.big_font, 380)
                 self.wrapped_text_current_state = self.current_dialogue_state
                 
             full_text = self.wrapped_text_cache
@@ -326,7 +336,7 @@ class Scene2:
         self.bullets.draw(screen)
         self.enemy_bullets.draw(screen)
         if self.key_dropped and not self.has_key:
-            pygame.draw.rect(screen, (255, 255, 0), self.key_rect)
+            screen.blit(self.key_img, self.key_rect)
 
         # --- PHẦN SỬA LỖI: HIỂN THỊ UI PLAYER ---
         # Kiểm tra health của self.player thay vì self
@@ -373,10 +383,8 @@ class Scene2:
             self.draw_dialogue(screen)
 
     def draw_dialogue(self, screen):
-        # Vẽ Box (Mở rộng cho cao hơn)
-        box_rect = pygame.Rect(50, 350, 700, 230)
-        pygame.draw.rect(screen, (20, 20, 50), box_rect)
-        pygame.draw.rect(screen, WHITE, box_rect, 3)
+        # Vẽ nền hộp thoại
+        screen.blit(self.dialogue_bg, (50, 350))
         
         state_data = dialogue_automaton[self.current_dialogue_state]
         
@@ -389,11 +397,11 @@ class Scene2:
         for line in lines:
             if line:
                 desc_surf = self.big_font.render(line, True, (200, 200, 255))
-                screen.blit(desc_surf, (70, y_text))
+                screen.blit(desc_surf, (283, y_text))
             y_text += 30
             
         # Tính vị trí vẽ các Options (Bên dưới dòng description cuối cùng xíu)
-        total_lines = len(full_text.split('\n'))
+        total_lines = len(lines)
         y_offset = 370 + total_lines * 30 + 10
         
         # Chỉ khi chữ chạy xong mới vẽ Option menu
@@ -401,14 +409,27 @@ class Scene2:
             options = state_data.get('options', {})
             for key, (text, next_st) in options.items():
                 opt_surf = self.font.render(f"[{key}] {text[:70]}", True, WHITE)
-                screen.blit(opt_surf, (70, y_offset))
+                screen.blit(opt_surf, (283, y_offset))
                 y_offset += 30
                 
             hint_surf = self.font.render("Nhấn chữ số (1, 2, 3...) tương ứng trên bàn phím để trả lời!", True, (255, 100, 100))
-            screen.blit(hint_surf, (70, 550))
+            screen.blit(hint_surf, (283, 550))
 
         skip_surf = self.font.render("Nhấn S để bỏ qua hội thoại.", True, (255, 255, 100))
-        screen.blit(skip_surf, (70, 580))
+        screen.blit(skip_surf, (283, 580))
+    
+    def wrap_text(self, text, max_chars):
+        words = text.split()
+        lines = []
+        current_line = ""
+        for word in words:
+            if len(current_line + word) + 1 <= max_chars:
+                current_line += word + " "
+            else:
+                lines.append(current_line.strip())
+                current_line = word + " "
+        lines.append(current_line.strip())
+        return '\n'.join(lines)
     
     def draw_vignette(self, screen):
         # Tạo một surface đen có độ trong suốt
