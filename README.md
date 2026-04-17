@@ -6,9 +6,8 @@
 
 ## 📖 Giới thiệu
 
-**FSM Hunter** là game 2D top-down shooter được xây dựng bằng Python và Pygame, trong đó hệ thống AI của kẻ địch được mô hình hóa hoàn toàn bằng **Finite State Machine (FSM)** — một dạng Deterministic Finite Automaton (DFA).
+**FSM Hunter** là game 2D top-down shooter được xây dựng bằng Python và Pygame, trong đó hệ thống thoại của trò chơi được mô hình hóa hoàn toàn bằng một dạng Deterministic Finite Automaton (DFA).
 
-Mỗi kẻ địch trong game là một automaton với tập trạng thái hữu hạn, chuyển tiếp giữa các trạng thái dựa trên các điều kiện đầu vào từ môi trường game (khoảng cách người chơi, máu còn lại, vật cản, v.v.).
 
 ---
 
@@ -21,20 +20,20 @@ Một DFA được định nghĩa bởi bộ 5 thành phần:
 ```
 M = (Q, Σ, δ, q₀, F)
 ```
+    Q (tập các trạng thái):  {TRUNG_LAP, TO_MO, NGHI_NGO, THAN_THIEN, TUC_GIAN, CHIEN_DAU, CHO_PHEP_QUA, TRUC XUAT} 
 
-| Ký hiệu | Ý nghĩa | Trong game |
+    𝝈 (Các lựa chọn): {1, 2, 3}
+
+    𝜹 (Hàm chuyển trạng thái):  Được định nghĩa qua bảng lựa chọn trong code.
+
+    q0 (Trạng thái bắt đầu):  TRUNG_LAP
+
+    F (Tập trạng thái kết thúc):  {CHO_PHEP_QUA, TRUC_XUAT}
 
 
 ### Đồ thị chuyển trạng thái (State Transition Diagram)
-
-
-
-### Bảng hàm chuyển tiếp δ
-
-| Trạng thái hiện tại | Sự kiện đầu vào | Trạng thái kế tiếp |
-|---------------------|-----------------|--------------------|
-
 ---
+![alt text](assets/image.png)
 
 ## 🕹️ Gameplay
 
@@ -43,14 +42,6 @@ M = (Q, Σ, δ, q₀, F)
 - Né tránh và tiêu diệt các kẻ địch
 - Mỗi kẻ địch hiển thị trạng thái FSM hiện tại phía trên đầu (debug mode)
 - Mục tiêu: lấy kho báu
-
-### Các loại kẻ địch
-
-|   Loại   |    Mô tả       |                   Đặc điểm FSM             |
-|----------|----------------|--------------------------------------------|
-|  Minion  | Kẻ địch cơ bản | 4 trạng thái: IDLE → CHASE → ATTACK → DEAD |
-| Scout    | Kẻ địch bắn xa | Tầm phát hiện rộng hơn                     |
-
 
 ---
 
@@ -98,9 +89,6 @@ Khởi chạy game
 python src/main.py
 
 
-## 🔧 Kiến trúc FSM trong code
-
-### Lớp `FiniteStateMachine` (core/fsm.py)
 
 
 ## 🎓 Liên hệ lý thuyết — Thực tiễn
